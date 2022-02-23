@@ -1,5 +1,9 @@
 import React, { useState } from 'react';
 
+type Todo = {
+  value: string;
+};
+
 function App() {
   const [text, setText] = useState('');
 
