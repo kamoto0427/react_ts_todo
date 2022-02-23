@@ -30,7 +30,9 @@ function App() {
   };
 
   const handleOnEdit = (id: number, value: string) => {
-    const newTodos = todos.map((todo) => {
+    const deepCopy = todos.map((todo) => ({...todo}));
+
+    const newTodos = deepCopy.map((todo) => {
       if (todo.id === id) {
         todo.value = value;
       }
