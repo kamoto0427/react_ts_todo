@@ -4,6 +4,7 @@ type Todo = {
   value: string;
   readonly id: number;
   checked: boolean;
+  removed: boolean;
 };
 
 function App() {
@@ -19,6 +20,7 @@ function App() {
       value: text,
       id: new Date().getTime(),
       checked: false,
+      removed: false,
     };
 
     setTodos([newTodo, ...todos]);
@@ -56,6 +58,19 @@ function App() {
     setTodos(newTodos);
   }
 
+  const handleOnRemove = (id: number, removed: boolean) => {
+    const deepCopy = todos.map((todo) => ({...todo}));
+
+    const newTodos = deepCopy.map((todo) => {
+      if (todo.id === id) {
+        todo.removed = !removed;
+      }
+      return todo;
+    });
+
+    setTodos(newTodos);
+  }
+
   return (
     <div>
       <form onSubmit={handleOnSubmit}>
@@ -66,8 +81,9 @@ function App() {
         {todos.map((todo) => {
           return (
             <li key={todo.id}>
-              <input type="checkbox" checked={todo.checked} onChange={() => handleOnCheck(todo.id, todo.checked)} />
-              <input type="text" disabled={todo.checked} value={todo.value} onChange={(e) => handleOnEdit(todo.id, e.target.value)} />
+              <input type="checkbox" disabled={todo.removed} checked={todo.checked} onChange={() => handleOnCheck(todo.id, todo.checked)} />
+              <input type="text" disabled={todo.checked || todo.removed} value={todo.value} onChange={(e) => handleOnEdit(todo.id, e.target.value)} />
+              <button onClick={() => handleOnRemove(todo.id, todo.removed)}>{todo.removed ? '復元' : '削除'}</button>
             </li>
           );
         })}
