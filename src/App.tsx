@@ -43,6 +43,19 @@ function App() {
     setTodos(newTodos);
   };
 
+  const handleOnCheck = (id: number, checked: boolean) => {
+    const deepCopy = todos.map((todo) => ({...todo}));
+
+    const newTodos = deepCopy.map((todo) => {
+      if (todo.id === id) {
+        todo.checked = !checked;
+      }
+      return todo;
+    });
+
+    setTodos(newTodos);
+  }
+
   return (
     <div>
       <form onSubmit={handleOnSubmit}>
@@ -53,8 +66,8 @@ function App() {
         {todos.map((todo) => {
           return (
             <li key={todo.id}>
-              <input type="checkbox" checked={todo.checked} onChange={(e) => e.preventDefault()} />
-              <input type="text" value={todo.value} onChange={(e) => handleOnEdit(todo.id, e.target.value)} />
+              <input type="checkbox" checked={todo.checked} onChange={() => handleOnCheck(todo.id, todo.checked)} />
+              <input type="text" disabled={todo.checked} value={todo.value} onChange={(e) => handleOnEdit(todo.id, e.target.value)} />
             </li>
           );
         })}
