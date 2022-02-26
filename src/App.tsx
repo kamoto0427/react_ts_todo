@@ -7,10 +7,14 @@ type Todo = {
   removed: boolean;
 };
 
+type Filter = 'all' | 'checked' | 'unchecked' | 'removed';
+
 function App() {
   const [text, setText] = useState('');
 
   const [todos, setTodos] = useState<Todo[]>([]);
+
+  const [filter, setFilter] = useState<Filter>('all');
 
   const handleOnSubmit = (e: React.FormEvent<HTMLFormElement | HTMLInputElement>) => {
     e.preventDefault();
@@ -71,17 +75,38 @@ function App() {
     setTodos(newTodos);
   }
 
+  const filterdTodos = todos.filter((todo) => {
+    switch (filter) {
+      case 'all':
+        return !todo.removed;
+      case 'checked':
+        return todo.checked && !todo.removed;
+      case 'unchecked':
+        return !todo.checked && !todo.removed;
+      case 'removed':
+        return todo.removed;
+      default:
+        return todo;
+    }
+  });
+
   return (
     <div>
-      <form onSubmit={handleOnSubmit}>
-        <input type="text" value={text} onChange={handleOnChange}/>
-        <input type="submit" value="追加" onSubmit={handleOnSubmit} />
+      <select defaultValue="all" onChange={(e) => setFilter(e.target.value as Filter)}>
+        <option value="all">全てのタスク</option>
+        <option value="checked">完了したタスク</option>
+        <option value="unchecked">現在のタスク</option>
+        <option value="removed">ゴミ箱</option>
+      </select>
+      <form onSubmit={(e) => handleOnSubmit(e)}>
+        <input type="text" value={text} onChange={(e) => handleOnChange(e)}/>
+        <input type="submit" value="追加" onSubmit={(e) => handleOnSubmit(e)} />
       </form>
       <ul>
-        {todos.map((todo) => {
+        {filterdTodos.map((todo) => {
           return (
             <li key={todo.id}>
-              <input type="checkbox" disabled={todo.removed} checked={todo.checked} onChange={() => handleOnCheck(todo.id, todo.checked)} />
+              <input type="checkbox" disabled={todo.removed} checked={todo.checked} onChange={(e) => handleOnCheck(todo.id, todo.checked)} />
               <input type="text" disabled={todo.checked || todo.removed} value={todo.value} onChange={(e) => handleOnEdit(todo.id, e.target.value)} />
               <button onClick={() => handleOnRemove(todo.id, todo.removed)}>{todo.removed ? '復元' : '削除'}</button>
             </li>
